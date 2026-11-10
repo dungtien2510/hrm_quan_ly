@@ -1,0 +1,28 @@
+{
+  "name": "hrm",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Phan mem quan ly quan nhan (chay noi bo, khong internet)",
+  "scripts": {
+    "xin-chao": "node xin-chao.js",
+    "thu-sqlite": "node thu-sqlite.js"
+  },
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "better-sqlite3": "^12.11.1",
+    "docx": "^9.15.3",
+    "exceljs": "^4.4.0",
+    "express": "^5.3.0",
+    "pdfmake": "^0.3.14",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-router-dom": "^7.18.5",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "vite": "^8.3.7"
+  }
+}
