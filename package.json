@@ -4,6 +4,11 @@
   "private": true,
   "description": "Phan mem quan ly quan nhan (chay noi bo, khong internet)",
   "scripts": {
+    "start": "node server/index.js",
+    "dev": "vite",
+    "dev:may-chu": "node --watch server/index.js",
+    "build": "vite build",
+    "test": "node --test \"server/**/*.test.js\"",
     "xin-chao": "node xin-chao.js",
     "thu-sqlite": "node thu-sqlite.js"
   },
