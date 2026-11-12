@@ -16,3 +16,6 @@ coverage/
 .DS_Store
 Thumbs.dbdu-lieu/
 .db-shm
+du-lieu/
+*.db-wal
+*.db-shm
