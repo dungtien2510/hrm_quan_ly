@@ -74,13 +74,13 @@ function napMoDun(thuMucModules) {
 
 // Gan duong dan API cua tung mo-dun. Moi mo-dun nhan mot Router rieng gan o /api/<ten>,
 // nen mo-dun khong the dang ky duong dan ngoai pham vi cua no.
-function dangKyRouteTatCa(app, dsMoDun) {
+function dangKyRouteTatCa(app, dsMoDun, boiCanh = {}) {
   const daDangKy = [];
   const dsLoi = [];
   for (const mod of dsMoDun) {
     try {
       const router = express.Router();
-      mod.dangKyRoute(router);
+      mod.dangKyRoute(router, boiCanh); // boiCanh: nhung thu loi chia se cho mo-dun, vd { db }
       app.use('/api/' + mod.ten, router);
       daDangKy.push(mod.ten);
     } catch (loi) {

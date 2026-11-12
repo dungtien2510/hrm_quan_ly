@@ -6,6 +6,7 @@ const path = require('path');
 const express = require('express');
 const { docEnv, layCauHinh } = require('./loi/doc-env');
 const { napMoDun, dangKyRouteTatCa } = require('./loi/nap-mo-dun');
+const { moCsdl, chayMigrations, nguonMigration } = require('./loi/csdl');
 
 const THU_MUC_GOC = path.resolve(__dirname, '..');
 docEnv(path.join(THU_MUC_GOC, '.env'));
@@ -15,7 +16,20 @@ const phienBan = require(path.join(THU_MUC_GOC, 'package.json')).version;
 // 1) Nap mo-dun
 const { dsMoDun, dsLoi: loiNap } = napMoDun(path.join(__dirname, 'modules'));
 
-// 2) Dung ung dung Express
+// 2) Mo co so du lieu va chay migration (loi truoc, roi tung mo-dun). Loi o day thi dung han, khong chay tiep.
+let db;
+try {
+  db = moCsdl(cauHinh.duongDanDb);
+  const ketQuaMigration = chayMigrations(db, nguonMigration(dsMoDun));
+  if (ketQuaMigration.daChay.length > 0) {
+    console.log('[CSDL] Da chay ' + ketQuaMigration.daChay.length + ' migration moi.');
+  }
+} catch (loi) {
+  console.error('[LOI] Khong mo duoc co so du lieu hoac migration loi: ' + loi.message);
+  process.exit(1);
+}
+
+// 3) Dung ung dung Express
 const app = express();
 app.disable('x-powered-by');
 app.use(express.json({ limit: '1mb' }));
@@ -24,14 +38,14 @@ app.get('/api/suc-khoe', (req, res) => {
   res.json({ trangThai: 'ok', phienBan, soMoDun: dsMoDun.length });
 });
 
-const { daDangKy } = dangKyRouteTatCa(app, dsMoDun);
+const { daDangKy } = dangKyRouteTatCa(app, dsMoDun, { db });
 
 // Duong dan /api khong co thi tra JSON 404 (khong tra trang web)
 app.use('/api', (req, res) => {
   res.status(404).json({ loi: 'Không tìm thấy đường dẫn API' });
 });
 
-// 3) Phat giao dien web da build (web/dist)
+// 4) Phat giao dien web da build (web/dist)
 const thuMucWeb = path.join(THU_MUC_GOC, 'web', 'dist');
 const coGiaoDien = fs.existsSync(path.join(thuMucWeb, 'index.html'));
 if (coGiaoDien) {
@@ -53,7 +67,7 @@ if (coGiaoDien) {
   });
 }
 
-// 4) Bat loi chung: khong lo thong tin ben trong cho nguoi dung
+// 5) Bat loi chung: khong lo thong tin ben trong cho nguoi dung
 app.use((loi, req, res, next) => {
   console.error('[LOI] ' + req.method + ' ' + req.originalUrl + ': ' + loi.message);
   if (res.headersSent) {
@@ -63,7 +77,7 @@ app.use((loi, req, res, next) => {
   res.status(500).json({ loi: 'Lỗi máy chủ' });
 });
 
-// 5) Khoi dong
+// 6) Khoi dong
 if (cauHinh.batHttps) {
   console.warn('[CANH BAO] BAT_HTTPS=true nhung HTTPS chua duoc ho tro (se lam o Buoc 11). Dang chay HTTP.');
 }
@@ -95,3 +109,13 @@ maychu.on('error', (loi) => {
   }
   process.exit(1);
 });
+
+// Dong may chu va file du lieu gon gang khi bam Ctrl+C
+function dung() {
+  maychu.close(() => {
+    db.close();
+    process.exit(0);
+  });
+}
+process.on('SIGINT', dung);
+process.on('SIGTERM', dung);
