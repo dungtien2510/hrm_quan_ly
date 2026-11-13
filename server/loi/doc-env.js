@@ -49,7 +49,17 @@ function layCauHinh(thuMucGoc) {
     ? path.resolve(thuMucGoc, process.env.DUONG_DAN_DB)
     : path.join(thuMucGoc, 'du-lieu', 'hrm.db');
   const batHttps = String(process.env.BAT_HTTPS || 'false').toLowerCase() === 'true';
-  return { cong, duongDanDb, batHttps };
+  // Phien dang nhap het han sau bay nhieu phut khong hoat dong (Buoc 11 hoan thien them).
+  const phutHetPhien = Number.parseInt(process.env.PHUT_HET_PHIEN || '30', 10);
+  if (!Number.isInteger(phutHetPhien) || phutHetPhien < 1 || phutHetPhien > 1440) {
+    throw new Error('PHUT_HET_PHIEN trong file .env phai la so tu 1 den 1440');
+  }
+  // Do "nang" cua bam mat khau bcrypt: cao hon thi an toan hon nhung cham hon.
+  const bcryptCost = Number.parseInt(process.env.BCRYPT_COST || '12', 10);
+  if (!Number.isInteger(bcryptCost) || bcryptCost < 4 || bcryptCost > 15) {
+    throw new Error('BCRYPT_COST trong file .env phai la so tu 4 den 15');
+  }
+  return { cong, duongDanDb, batHttps, phutHetPhien, bcryptCost };
 }
 
 module.exports = { docEnv, layCauHinh };

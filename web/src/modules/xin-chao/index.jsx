@@ -1,20 +1,23 @@
 import { useEffect, useState } from 'react';
+import { goiApi } from '../../api.js';
+import { dungXacThuc } from '../../xac-thuc.jsx';
 
 function TrangXinChao() {
+  const { xuLyLoiApi } = dungXacThuc();
   const [loiChao, setLoiChao] = useState('Đang gọi máy chủ...');
 
   useEffect(() => {
     const huy = new AbortController();
-    fetch('/api/xin-chao', { signal: huy.signal })
-      .then((phanHoi) => phanHoi.json())
+    goiApi('/api/xin-chao', { huy: huy.signal })
       .then((du) => setLoiChao(du.loiChao))
       .catch((loi) => {
         if (loi.name !== 'AbortError') {
-          setLoiChao('Không gọi được máy chủ');
+          setLoiChao(loi.message);
+          xuLyLoiApi(loi);
         }
       });
     return () => huy.abort();
-  }, []);
+  }, [xuLyLoiApi]);
 
   return (
     <div>

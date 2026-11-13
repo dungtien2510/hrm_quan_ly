@@ -53,3 +53,10 @@ test('cotNgayThieu tao 4 cot SQL va hienThiNgayThieu doi nguoc lai', () => {
   assert.strictEqual(hienThiNgayThieu(2019, 2, 5), '05/02/2019');
   assert.strictEqual(hienThiNgayThieu(null, null, null), '');
 });
+
+test('ngayDuongLich lay ngay theo gio dia phuong, khong lech nhu toISOString', () => {
+  const { ngayDuongLich } = require('../../shared/ngay-chuoi.js');
+  // 0h sang 11/11/2026 gio dia phuong: o UTC+7 thi toISOString se ra ngay 10, ngayDuongLich phai ra ngay 11.
+  assert.strictEqual(ngayDuongLich(new Date(2026, 10, 11, 0, 30)), '2026-11-11');
+  assert.strictEqual(ngayDuongLich(new Date(2026, 0, 5, 23, 59)), '2026-01-05');
+});

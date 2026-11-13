@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const express = require('express');
 
-const CAC_MANG = ['muc', 'boLoc', 'baoCao', 'menu'];
+const CAC_MANG = ['muc', 'boLoc', 'baoCao', 'xuat', 'menu'];
 
 function kiemTraMoDun(mod, tenThuMuc) {
   if (!mod || typeof mod !== 'object') {
@@ -62,6 +62,7 @@ function napMoDun(thuMucModules) {
         muc: mod.muc || [],
         boLoc: mod.boLoc || [],
         baoCao: mod.baoCao || [],
+        xuat: mod.xuat || [],
         menu: mod.menu || [],
       });
     } catch (loi) {

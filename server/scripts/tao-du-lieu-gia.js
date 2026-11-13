@@ -10,7 +10,7 @@ const path = require('path');
 const { docEnv, layCauHinh } = require('../loi/doc-env');
 const { napMoDun } = require('../loi/nap-mo-dun');
 const { moCsdl, chayMigrations, nguonMigration } = require('../loi/csdl');
-const { boDau, cotNgayThieu } = require('../../shared/ngay-chuoi.js');
+const { boDau, cotNgayThieu, ngayDuongLich } = require('../../shared/ngay-chuoi.js');
 const { TRUONG, COT_KY_THUAT } = require('../../shared/truong-muc.js');
 
 // ---- Danh sach cot hop le (ten bang/cot khong the dung dau ? nen chi cho phep ten nam trong bang khai bao) ----
@@ -533,7 +533,7 @@ function taoDuLieuGia(db, tuyChon = {}) {
 }
 
 function thongKe(db, ngay) {
-  const homNay = iso(ngay || new Date());
+  const homNay = ngayDuongLich(ngay || new Date()); // gio dia phuong, khong dung UTC
   return {
     quanNhan: db.prepare('SELECT COUNT(*) AS n FROM quan_nhan').get().n,
     dangVien: db.prepare('SELECT COUNT(*) AS n FROM quan_nhan WHERE la_dang_vien = 1').get().n,

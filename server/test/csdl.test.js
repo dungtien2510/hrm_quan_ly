@@ -23,17 +23,17 @@ function thuMucTam() {
 
 test('migration tao du bang va chay lai khong loi, khong nhan doi', () => {
   const { db, dsMoDun, kq } = taoDbDayDu();
-  assert.strictEqual(kq.daChay.length, 7);
+  assert.strictEqual(kq.daChay.length, 8);
   const bang = db.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'").all().map((d) => d.name);
   for (const ten of ['nguoi_dung', 'phien', 'quyen_tai_khoan', 'nhat_ky', 'danh_muc', 'quy_tac', 'cau_hinh_van_ban', 'so_van_ban', 'cau_hinh',
     'quan_nhan', 'qua_trinh_truoc_tuyen_dung', 'qua_trinh_cong_tac', 'dao_tao', 'khen_thuong', 'ky_luat_tien_an_tien_su', 'luong',
-    'than_nhan', 'trang_thai_quan_nhan', 'phien_ban_csdl']) {
+    'than_nhan', 'trang_thai_quan_nhan', 'phien_ban_csdl', 'dang_nhap_sai_theo_may']) {
     assert.ok(bang.includes(ten), 'thieu bang ' + ten);
   }
   const lanHai = chayMigrations(db, nguonMigration(dsMoDun));
   assert.deepStrictEqual(lanHai.daChay, []);
-  assert.strictEqual(lanHai.daCo, 7);
-  assert.strictEqual(db.prepare('SELECT COUNT(*) AS n FROM phien_ban_csdl').get().n, 7);
+  assert.strictEqual(lanHai.daCo, 8);
+  assert.strictEqual(db.prepare('SELECT COUNT(*) AS n FROM phien_ban_csdl').get().n, 8);
   // danh muc mac dinh khong bi nhan doi
   assert.strictEqual(db.prepare("SELECT COUNT(*) AS n FROM danh_muc WHERE loai = 'trang_thai'").get().n, 6);
   assert.strictEqual(db.prepare("SELECT tinh_la_vang FROM danh_muc WHERE ma = 'co_mat'").get().tinh_la_vang, 0);

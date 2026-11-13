@@ -3,20 +3,20 @@
 // Moi truong thuoc DUNG MOT muc. "cot" la cac cot SQL that su chua truong do.
 // File duoc tao tu bang truong cua Buoc 0 (file Excel buoc0_quan_ly_quan_nhan.xlsx).
 
-// 12 muc quyen; "nhayCam" danh dau 5 muc nhay cam.
+// 12 muc quyen; "nhan" la ten hien thi, "nhayCam" danh dau 5 muc nhay cam.
 export const MUC = [
-  { ma: 'thong_tin_co_ban', nhayCam: false },
-  { ma: 'lien_he', nhayCam: false },
-  { ma: 'than_nhan', nhayCam: false },
-  { ma: 'qua_trinh_cong_tac', nhayCam: false },
-  { ma: 'dao_tao', nhayCam: false },
-  { ma: 'khen_thuong', nhayCam: false },
-  { ma: 'trang_thai', nhayCam: false },
-  { ma: 'luong', nhayCam: true },
-  { ma: 'ky_luat', nhayCam: true },
-  { ma: 'tien_an_tien_su', nhayCam: true },
-  { ma: 'so_dinh_danh', nhayCam: true },
-  { ma: 'dac_diem_chinh_tri', nhayCam: true },
+  { ma: 'thong_tin_co_ban', nhan: 'Thông tin cơ bản', nhayCam: false },
+  { ma: 'lien_he', nhan: 'Liên hệ', nhayCam: false },
+  { ma: 'than_nhan', nhan: 'Thân nhân', nhayCam: false },
+  { ma: 'qua_trinh_cong_tac', nhan: 'Quá trình công tác', nhayCam: false },
+  { ma: 'dao_tao', nhan: 'Đào tạo', nhayCam: false },
+  { ma: 'khen_thuong', nhan: 'Khen thưởng', nhayCam: false },
+  { ma: 'trang_thai', nhan: 'Trạng thái', nhayCam: false },
+  { ma: 'luong', nhan: 'Lương', nhayCam: true },
+  { ma: 'ky_luat', nhan: 'Kỷ luật', nhayCam: true },
+  { ma: 'tien_an_tien_su', nhan: 'Tiền án, tiền sự', nhayCam: true },
+  { ma: 'so_dinh_danh', nhan: 'Số định danh (căn cước, BHXH, BHYT)', nhayCam: true },
+  { ma: 'dac_diem_chinh_tri', nhan: 'Đặc điểm chính trị', nhayCam: true },
 ];
 
 // Cac cot ky thuat (khong thuoc truong nao, khong can phan quyen theo muc).
@@ -208,4 +208,51 @@ export function cotTheoMuc(danhSachMuc, bang) {
     return ketQua[bang] || [];
   }
   return ketQua;
+}
+
+// Cac cot luon duoc tra ve cung ho so (dinh danh dong, khong chua noi dung nhay cam).
+// "tim_kiem", "da_xoa", "created_at", "updated_at" KHONG bao gio tra ra ngoai qua locTruong.
+export const COT_LUON_TRA = ['id', 'quan_nhan_id', 'version'];
+
+// Loc mot dong du lieu cua "bang": chi giu cac cot thuoc cac muc "danhSachMuc" duoc cap (quy tac 1).
+// - Bang phan quyen theo dong (ky luat / tien an): dong nao khong du muc thi tra ve null.
+// - Doi tuong rong (null/undefined) tra ve nguyen xi.
+export function locTruong(doiTuong, danhSachMuc, bang) {
+  if (doiTuong === null || doiTuong === undefined) {
+    return doiTuong;
+  }
+  const duocPhep = new Set(danhSachMuc);
+  let cotCho;
+  if (PHAN_QUYEN_THEO_DONG[bang]) {
+    if (!duocPhep.has(mucCuaDong(bang, doiTuong))) {
+      return null;
+    }
+    cotCho = new Set(TRUONG.filter((t) => t.bang === bang).flatMap((t) => t.cot));
+  } else {
+    cotCho = new Set(cotTheoMuc(danhSachMuc, bang));
+  }
+  for (const c of COT_LUON_TRA) {
+    cotCho.add(c);
+  }
+  const ketQua = {};
+  for (const [khoa, giaTri] of Object.entries(doiTuong)) {
+    if (cotCho.has(khoa)) {
+      ketQua[khoa] = giaTri;
+    }
+  }
+  return ketQua;
+}
+
+// Loc ca danh sach dong; bo cac dong khong du muc.
+export function locDanhSach(dsDong, danhSachMuc, bang) {
+  return dsDong.map((dong) => locTruong(dong, danhSachMuc, bang)).filter((dong) => dong !== null);
+}
+
+// Tai khoan co duoc xem BANG nay khong (co it nhat mot muc chua cot cua bang).
+export function coQuyenXemBang(danhSachMuc, bang) {
+  const duocPhep = new Set(danhSachMuc);
+  if (PHAN_QUYEN_THEO_DONG[bang]) {
+    return Object.values(PHAN_QUYEN_THEO_DONG[bang].mucTheoGiaTri).some((m) => duocPhep.has(m));
+  }
+  return TRUONG.some((t) => t.bang === bang && duocPhep.has(t.muc));
 }

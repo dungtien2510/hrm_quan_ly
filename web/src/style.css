@@ -8,3 +8,33 @@ body { margin: 0; font-family: "Segoe UI", Arial, sans-serif; font-size: 16px; c
 .menu a:hover { background: #2c4a85; }
 .menu a.active { background: #fff; color: #1f3864; font-weight: bold; }
 .noi-dung { flex: 1; padding: 24px; }
+
+/* ---- Buoc 4: dang nhap, bieu mau, bang, quan ly quyen ---- */
+.trang-giua { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.hop { background: #fff; padding: 24px; border-radius: 8px; width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 1px 6px rgba(0, 0, 0, 0.15); }
+.hop-ngang { background: #fff; padding: 16px 20px; border-radius: 8px; margin: 16px 0; max-width: 980px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12); }
+.hop h1, .hop-ngang h2, .hop-ngang h3 { margin: 0; }
+.hop-ngang h3 { font-size: 15px; margin-top: 8px; }
+label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+input, select { padding: 8px; font-size: 15px; border: 1px solid #b8bfcc; border-radius: 4px; }
+input[type="checkbox"] { padding: 0; }
+.nut { background: #1f3864; color: #fff; border: 0; border-radius: 4px; padding: 8px 14px; font-size: 14px; cursor: pointer; }
+.nut:disabled { opacity: 0.5; cursor: not-allowed; }
+.nut-phu { background: #e6e9f0; color: #1f3864; }
+.nut-nguy-hiem { background: #b71c1c; }
+.phu { color: #5c6475; font-size: 13px; margin: 0; }
+.loi { background: #fdecea; color: #8a1c13; padding: 10px; border-radius: 4px; font-size: 14px; }
+.canh-bao { background: #fff4d6; color: #5c4400; padding: 10px; border-radius: 4px; font-size: 14px; display: flex; flex-direction: column; gap: 8px; }
+.thanh-cong { background: #e5f4e6; color: #1b5e20; padding: 10px; border-radius: 4px; font-size: 14px; word-break: break-word; }
+.hang { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.bang { border-collapse: collapse; background: #fff; width: 100%; max-width: 980px; font-size: 14px; }
+.bang th, .bang td { border: 1px solid #d5d9e2; padding: 8px; text-align: left; }
+.bang th { background: #eef1f7; }
+.thao-tac { display: flex; gap: 6px; flex-wrap: wrap; }
+.luoi-quyen { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 6px 16px; }
+.luoi-quyen label { flex-direction: row; align-items: center; gap: 6px; flex-wrap: wrap; }
+.nhay-cam { color: #8a1c13; }
+.the-do { background: #b71c1c; color: #fff; font-size: 11px; padding: 1px 6px; border-radius: 10px; }
+.the-vang { background: #f9a825; color: #3b2a00; font-size: 11px; padding: 1px 6px; border-radius: 10px; }
+.menu-chan { margin-top: auto; padding: 12px 16px; color: #dce3f1; font-size: 14px; display: flex; flex-direction: column; gap: 8px; }
+.menu { min-height: 100vh; }

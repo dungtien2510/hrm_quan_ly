@@ -103,3 +103,10 @@ export function hienThiNgayThieu(nam, thang, ngay) {
   }
   return ngay ? hai(ngay) + '/' + hai(thang) + '/' + nam : hai(thang) + '/' + nam;
 }
+
+// Ngay duong lich theo GIO DIA PHUONG cua may (khong phai gio UTC), dang 'yyyy-mm-dd'.
+// Luu y: KHONG dung date.toISOString().slice(0, 10) de lay "hom nay": o Viet Nam (UTC+7) tu 0h den 7h sang
+// ham do se tra ve ngay HOM QUA. Moi cho can "hom nay" (trang thai, nghi huu, canh bao) phai dung ham nay.
+export function ngayDuongLich(ngay = new Date()) {
+  return ngay.getFullYear() + '-' + hai(ngay.getMonth() + 1) + '-' + hai(ngay.getDate());
+}
