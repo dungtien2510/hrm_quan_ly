@@ -1,9 +1,10 @@
 'use strict';
 // Mo-dun "quan-nhan": ho so quan nhan. Khai bao 12 muc quyen, bo loc, bao cao, dinh dang xuat.
-// O Buoc 4 co API xem mot ho so (de kiem tra phan quyen); Buoc 5 them danh sach, them, sua, trang thai.
+// Buoc 5: danh sach, xem, them, sua, xoa mem ho so (khoa lac quan theo version). Trang thai hang ngay o mo-dun trang-thai.
 const path = require('path');
 const { MUC } = require('../../../shared/truong-muc.js');
 const { dangKyHoSo } = require('./ho-so');
+const { dangKyGhi } = require('./ghi');
 
 const B = (id, nhan, muc) => ({ id, nhan, truong: id, muc });
 
@@ -12,6 +13,7 @@ module.exports = {
   migrations: path.join(__dirname, 'migrations'),
   dangKyRoute(router, boiCanh) {
     dangKyHoSo(router, boiCanh);
+    dangKyGhi(router, boiCanh);
   },
 
   // 12 muc quyen (5 muc nhay cam) lay tu bang khai bao dung chung shared/truong-muc.js

@@ -110,3 +110,31 @@ export function hienThiNgayThieu(nam, thang, ngay) {
 export function ngayDuongLich(ngay = new Date()) {
   return ngay.getFullYear() + '-' + hai(ngay.getMonth() + 1) + '-' + hai(ngay.getDate());
 }
+
+// Tuoi tinh den ngay "homNay" (dang 'yyyy-mm-dd'): { tuoi: so nam tron, soThang: tong so thang tron }.
+// "chuan" la ngay chuan hoa (ngay sinh chi co thang/nam thi lay ngay 1). Tra ve null neu sinh SAU homNay.
+export function tinhTuoi(chuan, homNay = ngayDuongLich()) {
+  if (!chuan) {
+    return null;
+  }
+  const [ns, ts, ds] = chuan.split('-').map(Number);
+  const [nh, th, dh] = homNay.split('-').map(Number);
+  const soThang = (nh - ns) * 12 + (th - ts) - (dh < ds ? 1 : 0);
+  if (soThang < 0) {
+    return null;
+  }
+  return { tuoi: Math.floor(soThang / 12), soThang };
+}
+
+// Ngay "ngay" ({ nam, thang, ngay | null }) co nam SAU ngay hom nay ('yyyy-mm-dd') khong?
+// Ngay chi co thang/nam: tinh la o tuong lai khi THANG do chua den (thang hien tai van hop le vi chua biet ngay cu the).
+export function laSauHomNay(ngay, homNay = ngayDuongLich()) {
+  const [nh, th, dh] = homNay.split('-').map(Number);
+  if (ngay.nam !== nh) {
+    return ngay.nam > nh;
+  }
+  if (ngay.thang !== th) {
+    return ngay.thang > th;
+  }
+  return ngay.ngay !== null && ngay.ngay !== undefined && ngay.ngay > dh;
+}

@@ -495,6 +495,11 @@ function taoDuLieuGia(db, tuyChon = {}) {
         if (k === 2 && (ma === 'cong_tac' || ma === 'benh_xa')) {
           den = null;
         }
+        // Chi nghi phep va cong tac moi co "den ngay" o tuong lai; cac loai con lai ghi viec dang xay ra
+        // (den ngay = hom nay, hoac de trong neu chua ket thuc).
+        if (ma !== 'nghi_phep' && ma !== 'cong_tac' && den !== null && den > homNayUTC) {
+          den = k % 2 === 0 ? null : homNayUTC;
+        }
         tuHomNay.set(h.id, tu);
         chen(db, 'trang_thai_quan_nhan', {
           quan_nhan_id: h.id,

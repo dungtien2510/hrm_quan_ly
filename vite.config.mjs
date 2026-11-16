@@ -11,6 +11,8 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    // Giao dien dung chung thu muc ../shared (bang truong-muc, ham xu ly ngay) voi may chu.
+    fs: { allow: ['..'] },
     // Khi chay "npm run dev", cac yeu cau /api duoc chuyen sang may chu Express o cong 3000.
     proxy: { '/api': 'http://localhost:3000' },
   },

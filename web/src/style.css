@@ -38,3 +38,32 @@ input[type="checkbox"] { padding: 0; }
 .the-vang { background: #f9a825; color: #3b2a00; font-size: 11px; padding: 1px 6px; border-radius: 10px; }
 .menu-chan { margin-top: auto; padding: 12px 16px; color: #dce3f1; font-size: 14px; display: flex; flex-direction: column; gap: 8px; }
 .menu { min-height: 100vh; }
+
+/* ---- Buoc 5: ho so, tab, form, trang thai ---- */
+.tieu-de-trang { margin-bottom: 8px; }
+.tieu-de-trang h1 { margin: 0 12px 0 0; font-size: 22px; }
+.cuon-ngang { overflow-x: auto; }
+.cac-tab { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 2px solid #1f3864; margin: 12px 0 0; }
+.tab { background: #e6e9f0; color: #1f3864; border: 0; border-radius: 6px 6px 0 0; padding: 8px 14px; cursor: pointer; font-size: 14px; }
+.tab-chon { background: #1f3864; color: #fff; font-weight: bold; }
+.noi-dung-tab { background: #fff; padding: 12px 16px; border-radius: 0 0 8px 8px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1); }
+.phan { margin-bottom: 18px; }
+.phan h3 { margin: 0 0 8px; font-size: 16px; color: #1f3864; border-bottom: 1px solid #d5d9e2; padding-bottom: 4px; }
+.luoi-truong { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px 16px; margin: 0; }
+.o-truong dt { font-size: 12px; color: #5c6475; }
+.o-truong dd { margin: 0; font-size: 15px; word-break: break-word; }
+.khong-quyen { background: #f1f2f6; color: #5c6475; padding: 8px 10px; border-radius: 4px; margin: 4px 0; font-size: 14px; }
+.the-trang-thai { color: #fff; padding: 2px 10px; border-radius: 12px; font-size: 13px; white-space: nowrap; }
+.hang-form { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px 12px; align-items: end; background: #f6f7fb; padding: 10px; border-radius: 6px; margin-top: 10px; }
+.hang-form strong { grid-column: 1 / -1; }
+.hang-form .hang { grid-column: 1 / -1; }
+.luoi-nhap { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px 14px; }
+.luoi-nhap label.co-loi input, .luoi-nhap label.co-loi select { border-color: #b71c1c; background: #fff5f5; }
+.o-tick { flex-direction: row !important; align-items: center; gap: 8px; }
+.loi-truong { color: #b71c1c; font-size: 12px; }
+.the-dong { border: 1px solid #d5d9e2; border-radius: 6px; padding: 10px; margin-bottom: 10px; background: #fafbfd; }
+.thanh-luu { position: sticky; bottom: 0; background: #f4f5f7; padding: 10px 0; margin-top: 12px; }
+.o-so { width: 70px; }
+tr.mo td { color: #8a909e; }
+
+.goi-y-hang { grid-column: 1 / -1; margin: 0; }

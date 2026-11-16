@@ -256,3 +256,41 @@ export function coQuyenXemBang(danhSachMuc, bang) {
   }
   return TRUONG.some((t) => t.bang === bang && duocPhep.has(t.muc));
 }
+
+// Gia tri cua cac truong "lua chon" co dinh (khong lay tu danh_muc). Khop voi CHECK trong migration.
+export const GIA_TRI_LUA_CHON = {
+  'quan_nhan.gioi_tinh': [{ ma: 'nam', nhan: 'Nam' }, { ma: 'nu', nhan: 'Nữ' }],
+  'than_nhan.gioi_tinh': [{ ma: 'nam', nhan: 'Nam' }, { ma: 'nu', nhan: 'Nữ' }],
+  'than_nhan.nhom': [{ ma: 'ban_than', nhan: 'Bản thân (B.I)' }, { ma: 'vo_chong', nhan: 'Vợ/chồng (B.II)' }],
+  'than_nhan.quan_he': [
+    { ma: 'cha', nhan: 'Cha' },
+    { ma: 'me', nhan: 'Mẹ' },
+    { ma: 'nguoi_nuoi_duong', nhan: 'Người nuôi dưỡng' },
+    { ma: 'vo', nhan: 'Vợ' },
+    { ma: 'chong', nhan: 'Chồng' },
+    { ma: 'con', nhan: 'Con' },
+    { ma: 'anh_chi_em', nhan: 'Anh, chị, em ruột' },
+  ],
+  'ky_luat_tien_an_tien_su.loai': [{ ma: 'ky_luat', nhan: 'Kỷ luật' }, { ma: 'tien_an', nhan: 'Tiền án' }, { ma: 'tien_su', nhan: 'Tiền sự' }],
+};
+
+// Quan he nao duoc phep trong tung nhom than nhan (B.I = ban_than, B.II = vo_chong).
+export const QUAN_HE_THEO_NHOM = {
+  ban_than: ['cha', 'me', 'nguoi_nuoi_duong', 'vo', 'chong', 'con', 'anh_chi_em'],
+  vo_chong: ['cha', 'me', 'nguoi_nuoi_duong', 'anh_chi_em'],
+};
+
+// Cac truong "so dinh danh dang chu" phai CHE khi tra ra (chi hien day du qua API "hien so", co ghi nhat ky).
+export const TRUONG_CHE_SO = {
+  quan_nhan: ['so_can_cuoc', 'so_bhxh', 'so_the_bhyt'],
+  than_nhan: ['so_can_cuoc'],
+};
+
+// "123456789012" -> "********9012" (chi giu 4 ky tu cuoi). Rong thi tra nguyen.
+export function cheSo(giaTri) {
+  if (giaTri === null || giaTri === undefined || giaTri === '') {
+    return giaTri;
+  }
+  const chuoi = String(giaTri);
+  return chuoi.length <= 4 ? '****' : '*'.repeat(chuoi.length - 4) + chuoi.slice(-4);
+}
