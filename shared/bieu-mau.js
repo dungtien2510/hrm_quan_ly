@@ -25,8 +25,8 @@ const SO_NGUYEN = new Set(['nam_tot_nghiep_pho_thong']);
 
 // Moi ngay trong ho so la su viec DA XAY RA nen khong duoc o tuong lai (sau hom nay), tru cac truong sau:
 // - "Den thang/nam" cua dao tao: khoa hoc dang hoc co the du kien ket thuc sau nay.
-// Trang thai hang ngay co quy tac rieng (xem mo-dun trang-thai).
-export const CHO_PHEP_NGAY_TUONG_LAI = new Set(['dao_tao.den_thang_nam']);
+// - Trang thai hang ngay (tu_ngay, den_ngay): co quy tac rieng theo tung loai (xem mo-dun trang-thai/quy-tac.js).
+export const CHO_PHEP_NGAY_TUONG_LAI = new Set(['dao_tao.den_thang_nam', 'trang_thai_quan_nhan.tu_ngay', 'trang_thai_quan_nhan.den_ngay']);
 const DO_DAI_TOI_DA = 500;
 
 export function ngayDuSangHienThi(iso) {
@@ -122,7 +122,7 @@ export function bieuMauSangCot(bang, bieuMau, tuyChon = {}) {
           break;
         }
         case 'ngay_du': {
-          const ngay = rong ? null : chuanHoaNgayThieu(String(tho).trim());
+          const ngay = rong ? null : chuanHoaNgayThieu(typeof tho === 'string' ? tho.trim() : tho);
           if (ngay && ngay.ngay === null) {
             throw new Error('Cần ngày đầy đủ dd/mm/yyyy, không chỉ tháng/năm');
           }

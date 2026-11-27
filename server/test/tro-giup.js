@@ -111,6 +111,26 @@ class Khach {
     return { ma: phanHoi.status, du, cacCookie };
   }
 
+  // Gui mot file (Buffer) lam noi dung yeu cau; tra ve { ma, du, tieuDe, than }.
+  async guiTep(phuongThuc, duongDan, buffer, tuyChon = {}) {
+    const tieuDe = { 'content-type': 'application/octet-stream' };
+    if (this.cookie) {
+      tieuDe.cookie = this.cookie;
+    }
+    if (this.csrf) {
+      tieuDe['x-csrf-token'] = this.csrf;
+    }
+    const phanHoi = await fetch(this.goc + duongDan, { method: phuongThuc, headers: tieuDe, body: buffer });
+    let du = null;
+    const thanTho = Buffer.from(await phanHoi.arrayBuffer());
+    try {
+      du = JSON.parse(thanTho.toString('utf8'));
+    } catch {
+      du = null;
+    }
+    return { ma: phanHoi.status, du, tieuDe: phanHoi.headers, than: thanTho, ...(tuyChon.giu ? {} : {}) };
+  }
+
   async dangNhap(ten, matKhau, them = {}, tuyChon = {}) {
     const kq = await this.goi('POST', '/api/tai-khoan/dang-nhap', { tenDangNhap: ten, matKhau, ...them }, tuyChon);
     if (kq.ma === 200) {

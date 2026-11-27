@@ -122,7 +122,7 @@ test('them ho so: thanh cong, trung ma, du lieu sai bao tung truong, chi admin',
     assert.strictEqual(may.db.prepare("SELECT COUNT(*) AS n FROM quan_nhan WHERE ma_quan_nhan = 'MOI.001'").get().n, 1);
 
     const sai = hoSoMoi(may, 'MOI.002', { ngay_sinh: '31/02/2000', don_vi: 99999, ho_ten_khai_sinh: '' });
-    sai.than_nhan.push({ nhom: 'vo_chong', quan_he: 'vo', ho_ten: 'Sai nhom' }, { nhom: 'ban_than', quan_he: 'cha', ho_ten: '' });
+    sai.than_nhan.push({ nhom: 'vo_chong', quan_he: 'vo', ho_ten: 'Sai nhom' }, { nhom: 'ban_than', quan_he: 'anh_chi_em', ho_ten: '' });
     const kq = await admin.goi('POST', '/api/quan-nhan', sai);
     assert.strictEqual(kq.ma, 400);
     assert.strictEqual(kq.du.ma, 'DU_LIEU_SAI');

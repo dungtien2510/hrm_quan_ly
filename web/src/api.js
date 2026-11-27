@@ -5,6 +5,23 @@ export function datMaCsrf(ma) {
   maCsrf = ma;
 }
 
+// Doc phan hoi JSON; loi thi nem Error co .trangThai va .du
+async function docPhanHoi(phanHoi) {
+  let du = null;
+  try {
+    du = await phanHoi.json();
+  } catch {
+    du = null;
+  }
+  if (!phanHoi.ok) {
+    const loi = new Error((du && du.loi) || 'Lỗi ' + phanHoi.status);
+    loi.trangThai = phanHoi.status;
+    loi.du = du;
+    throw loi;
+  }
+  return du;
+}
+
 // goiApi('/api/...', { phuongThuc: 'POST', body: {...} }) -> du lieu JSON; loi thi nem Error co .trangThai va .du
 export async function goiApi(duongDan, tuyChon = {}) {
   const { phuongThuc = 'GET', body, huy } = tuyChon;
@@ -22,19 +39,35 @@ export async function goiApi(duongDan, tuyChon = {}) {
     credentials: 'same-origin',
     signal: huy,
   });
-  let du = null;
-  try {
-    du = await phanHoi.json();
-  } catch {
-    du = null;
+  return docPhanHoi(phanHoi);
+}
+
+// Gui noi dung mot file (File) lam than yeu cau POST (vd file Excel). Tra ve JSON.
+export async function guiTep(duongDan, tep) {
+  const noiDung = await tep.arrayBuffer();
+  const tieuDe = { 'Content-Type': 'application/octet-stream' };
+  if (maCsrf) {
+    tieuDe['X-CSRF-Token'] = maCsrf;
   }
+  const phanHoi = await fetch(duongDan, { method: 'POST', headers: tieuDe, body: noiDung, credentials: 'same-origin' });
+  return docPhanHoi(phanHoi);
+}
+
+// Tai mot file ve may (vd file Excel mau) qua trinh duyet.
+export async function taiTep(duongDan, tenFile) {
+  const phanHoi = await fetch(duongDan, { credentials: 'same-origin' });
   if (!phanHoi.ok) {
-    const loi = new Error((du && du.loi) || 'Lỗi ' + phanHoi.status);
-    loi.trangThai = phanHoi.status;
-    loi.du = du;
-    throw loi;
+    await docPhanHoi(phanHoi);
   }
-  return du;
+  const blob = await phanHoi.blob();
+  const url = URL.createObjectURL(blob);
+  const lien = document.createElement('a');
+  lien.href = url;
+  lien.download = tenFile;
+  document.body.appendChild(lien);
+  lien.click();
+  lien.remove();
+  URL.revokeObjectURL(url);
 }
 
 // Mat khau tam ngau nhien (14 ky tu de doc + "a9" de du chu va so). Chi hien cho admin MOT LAN.

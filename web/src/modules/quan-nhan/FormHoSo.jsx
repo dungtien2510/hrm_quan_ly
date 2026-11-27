@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useBlocker, useNavigate, useParams } from 'react-router-dom';
 import { goiApi } from '../../api.js';
 import { dungXacThuc } from '../../xac-thuc.jsx';
-import { GIA_TRI_LUA_CHON, QUAN_HE_THEO_NHOM, TRUONG } from '../../../../shared/truong-muc.js';
+import { GIA_TRI_LUA_CHON, QUAN_HE_THEO_NHOM, TINH_CHAT_THEO_QUAN_HE, TRUONG } from '../../../../shared/truong-muc.js';
+import { kiemTraTrungThanNhan } from '../../../../shared/than-nhan.js';
 import { bieuMauSangCot, dongSangBieuMau } from '../../../../shared/bieu-mau.js';
 import { ngayDuongLich } from '../../../../shared/ngay-chuoi.js';
 import { NHAN_MUC, truongCua } from './hien-thi.jsx';
@@ -195,6 +196,10 @@ export default function FormHoSo() {
   const datDong = (bang, i, truong, gt) => {
     const ds = bm[bang].slice();
     ds[i] = { ...ds[i], [truong]: gt };
+    // Doi quan he thi bo "loai quan he" neu khong con dung cho quan he moi (vd con -> anh chi em)
+    if (bang === 'than_nhan' && truong === 'quan_he' && !(TINH_CHAT_THEO_QUAN_HE[gt] || []).includes(ds[i].tinh_chat)) {
+      ds[i].tinh_chat = '';
+    }
     setBm({ ...bm, [bang]: ds });
   };
   const themDong = (bang, them = {}) => setBm({ ...bm, [bang]: [...bm[bang], { ...dongSangBieuMau(bang, {}), ...them }] });
@@ -211,6 +216,9 @@ export default function FormHoSo() {
     const ds = GIA_TRI_LUA_CHON[t.bang + '.' + t.truong] || [];
     if (t.bang === 'than_nhan' && t.truong === 'quan_he') {
       return ds.filter((g) => (QUAN_HE_THEO_NHOM[dong.nhom] || []).includes(g.ma));
+    }
+    if (t.bang === 'than_nhan' && t.truong === 'tinh_chat') {
+      return ds.filter((g) => (TINH_CHAT_THEO_QUAN_HE[dong.quan_he] || []).includes(g.ma));
     }
     return ds;
   }
@@ -232,15 +240,27 @@ export default function FormHoSo() {
     for (const [k, v] of Object.entries(bieuMauSangCot('quan_nhan', bm.quan_nhan, tuyChon).loi)) {
       ds[khoaLoi('quan_nhan', null, k)] = v;
     }
+    const cotThanNhan = [];
     for (const bang of BANG_CON) {
       bm[bang].forEach((dong, i) => {
-        for (const [k, v] of Object.entries(bieuMauSangCot(bang, dong, tuyChon).loi)) {
+        const kq = bieuMauSangCot(bang, dong, tuyChon);
+        if (bang === 'than_nhan') {
+          cotThanNhan.push(kq.cot);
+        }
+        for (const [k, v] of Object.entries(kq.loi)) {
           ds[khoaLoi(bang, i, k)] = v;
         }
         if (bang === 'than_nhan' && dong.quan_he && !(QUAN_HE_THEO_NHOM[dong.nhom] || []).includes(dong.quan_he)) {
           ds[khoaLoi(bang, i, 'quan_he')] = 'Quan hệ này không dùng được trong nhóm này';
         }
       });
+    }
+    // Khong ghi trung than nhan (cung quy tac voi may chu): moi cha/me chi mot nguoi cho moi loai quan he...
+    for (const l of kiemTraTrungThanNhan(cotThanNhan, (i) => '"' + (cotThanNhan[i].ho_ten || 'dòng ' + (i + 1)) + '"')) {
+      const khoa = khoaLoi('than_nhan', l.chiSo, l.truong);
+      if (!ds[khoa]) {
+        ds[khoa] = l.thongBao;
+      }
     }
     return ds;
   }

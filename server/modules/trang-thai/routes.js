@@ -9,6 +9,7 @@ const { chuanHoaNgayDu, ngayDuongLich } = require('../../../shared/ngay-chuoi.js
 const { ngayDuSangHienThi } = require('../../../shared/bieu-mau.js');
 const { phanTich, guiLoiDuLieu, boc, LoiNghiepVu } = require('../tai-khoan/tien-ich');
 const { trangThaiNgay, timKhoangChong } = require('./trang-thai-ngay');
+const { kiemTraNgayTuongLai } = require('./quy-tac');
 
 const luocDo = z
   .object({
@@ -70,30 +71,10 @@ function dangKyTrangThai(router, boiCanh) {
     if (!loai) {
       throw new LoiNghiepVu('Loại trạng thái không có trong danh mục');
     }
-    // Ngay o tuong lai: chi cac loai duoc phep dang ky truoc (vd nghi phep, cong tac).
-    // Loai con lai (benh vien, benh xa...) chi ghi nhan viec DA/DANG xay ra: "tu ngay" va "den ngay" khong sau hom nay;
-    // neu van dang o trang thai do thi de trong "den ngay" (he thong hieu la chua ket thuc).
-    if (!loai.cho_dang_ky_truoc) {
-      const homNay = ngayDuongLich();
-      const duocTruoc = db
-        .prepare("SELECT ten FROM danh_muc WHERE loai = 'trang_thai' AND cho_dang_ky_truoc = 1 AND dang_dung = 1 ORDER BY thu_tu, id")
-        .all()
-        .map((d) => '"' + d.ten + '"');
-      const goiY = duocTruoc.length > 0 ? ' Chỉ ' + duocTruoc.join(', ') + ' mới đăng ký trước được (đổi ở màn hình Danh mục).' : '';
-      if (tu > homNay) {
-        throw new LoiNghiepVu(
-          'Trạng thái "' + loai.ten + '" không đăng ký trước được: "từ ngày" ' + ngayDuSangHienThi(tu) + ' đang ở tương lai (hôm nay là ' + ngayDuSangHienThi(homNay) + ').' + goiY,
-          400,
-          { ma: 'NGAY_TUONG_LAI' }
-        );
-      }
-      if (den && den > homNay) {
-        throw new LoiNghiepVu(
-          'Trạng thái "' + loai.ten + '": "đến ngày" ' + ngayDuSangHienThi(den) + ' đang ở tương lai. Nếu vẫn đang ở trạng thái này thì để trống "đến ngày" (hiểu là chưa kết thúc).' + goiY,
-          400,
-          { ma: 'NGAY_TUONG_LAI' }
-        );
-      }
+    // Ngay o tuong lai: chi cac loai duoc phep dang ky truoc (vd nghi phep, cong tac) - xem quy-tac.js
+    const viPham = kiemTraNgayTuongLai(db, loai, tu, den, ngayDuongLich());
+    if (viPham) {
+      throw new LoiNghiepVu(viPham.thongBao, 400, { ma: 'NGAY_TUONG_LAI' });
     }
     const chong = timKhoangChong(db, quanNhanId, tu, den, boQuaDongId);
     if (chong) {

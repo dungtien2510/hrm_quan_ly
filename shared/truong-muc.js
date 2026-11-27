@@ -120,6 +120,7 @@ export const TRUONG = [
   {"bang": "luong", "truong": "tien_luong_theo_vi_tri", "hienThi": "Tiền lương theo vị trí việc làm", "kieu": "so", "batBuoc": false, "muc": "luong", "cot": ["tien_luong_theo_vi_tri"]},
   {"bang": "than_nhan", "truong": "nhom", "hienThi": "Nhóm (ban_than / vo_chong)", "kieu": "lua_chon", "batBuoc": true, "muc": "than_nhan", "cot": ["nhom"]},
   {"bang": "than_nhan", "truong": "quan_he", "hienThi": "Quan hệ", "kieu": "lua_chon", "batBuoc": true, "muc": "than_nhan", "cot": ["quan_he"], "ghiChu": "cha, me, nguoi_nuoi_duong, vo, chong, con, anh_chi_em"},
+  {"bang": "than_nhan", "truong": "tinh_chat", "hienThi": "Loại quan hệ (đẻ, nuôi, kế, đã ly hôn)", "kieu": "lua_chon", "batBuoc": false, "muc": "than_nhan", "cot": ["tinh_chat"], "ghiChu": "Để trống = đẻ (cha, mẹ, con) hoặc hiện tại (vợ, chồng)"},
   {"bang": "than_nhan", "truong": "ho_ten", "hienThi": "Họ và tên", "kieu": "chu", "batBuoc": true, "muc": "than_nhan", "cot": ["ho_ten"]},
   {"bang": "than_nhan", "truong": "gioi_tinh", "hienThi": "Giới tính", "kieu": "lua_chon", "batBuoc": false, "muc": "than_nhan", "cot": ["gioi_tinh"]},
   {"bang": "than_nhan", "truong": "ngay_sinh", "hienThi": "Ngày, tháng, năm sinh", "kieu": "ngay_thieu", "batBuoc": false, "muc": "than_nhan", "cot": ["ngay_sinh_nam", "ngay_sinh_thang", "ngay_sinh_ngay", "ngay_sinh_chuan"], "ghiChu": "Tuổi con tự tính, không lưu"},
@@ -271,6 +272,12 @@ export const GIA_TRI_LUA_CHON = {
     { ma: 'con', nhan: 'Con' },
     { ma: 'anh_chi_em', nhan: 'Anh, chị, em ruột' },
   ],
+  'than_nhan.tinh_chat': [
+    { ma: 'de', nhan: 'Đẻ (ruột)' },
+    { ma: 'nuoi', nhan: 'Nuôi' },
+    { ma: 'ke', nhan: 'Kế (cha dượng, mẹ kế)' },
+    { ma: 'da_ly_hon', nhan: 'Đã ly hôn' },
+  ],
   'ky_luat_tien_an_tien_su.loai': [{ ma: 'ky_luat', nhan: 'Kỷ luật' }, { ma: 'tien_an', nhan: 'Tiền án' }, { ma: 'tien_su', nhan: 'Tiền sự' }],
 };
 
@@ -278,6 +285,15 @@ export const GIA_TRI_LUA_CHON = {
 export const QUAN_HE_THEO_NHOM = {
   ban_than: ['cha', 'me', 'nguoi_nuoi_duong', 'vo', 'chong', 'con', 'anh_chi_em'],
   vo_chong: ['cha', 'me', 'nguoi_nuoi_duong', 'anh_chi_em'],
+};
+
+// "Loai quan he" (tinh_chat) nao dung duoc cho tung quan he. Quan he khong co trong bang nay thi khong co loai.
+export const TINH_CHAT_THEO_QUAN_HE = {
+  cha: ['de', 'nuoi', 'ke'],
+  me: ['de', 'nuoi', 'ke'],
+  con: ['de', 'nuoi'],
+  vo: ['da_ly_hon'],
+  chong: ['da_ly_hon'],
 };
 
 // Cac truong "so dinh danh dang chu" phai CHE khi tra ra (chi hien day du qua API "hien so", co ghi nhat ky).

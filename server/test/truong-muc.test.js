@@ -24,7 +24,7 @@ test('co 12 muc, dung 5 muc nhay cam', () => {
 });
 
 test('moi truong thuoc dung mot muc hop le va khong trung', () => {
-  assert.strictEqual(TRUONG.length, 116);
+  assert.strictEqual(TRUONG.length, 117);
   const maMuc = new Set(MUC.map((m) => m.ma));
   const daThay = new Set();
   for (const t of TRUONG) {

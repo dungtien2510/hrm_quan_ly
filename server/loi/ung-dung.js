@@ -1,12 +1,14 @@
 'use strict';
 // ung-dung.js: lap rap ung dung Express (chua listen) de index.js va cac bai kiem thu dung chung.
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const express = require('express');
 const { dangKyRouteTatCa } = require('./nap-mo-dun');
 const { taoSoDangKy, dongBoQuyenMacDinh, locTruong } = require('./quyen');
 const { taoXacThuc } = require('./xac-thuc');
 const { ghiNhatKy } = require('./nhat-ky');
+const { taoBanSaoLuu } = require('./sao-luu');
 
 // tuyChon: { db, cauHinh, dsMoDun, phienBan, thuMucWeb (tuy chon) }
 function taoUngDung(tuyChon) {
@@ -34,6 +36,12 @@ function taoUngDung(tuyChon) {
     xacThuc,
     locTruong,
     ghiNhatKy: (thamSo) => ghiNhatKy(db, thamSo),
+    // Ban sao luu tam thoi (Buoc 12 se thay bang sao luu ma hoa). Dat o canh file du lieu.
+    saoLuu: (lyDo) =>
+      taoBanSaoLuu(db, {
+        thuMuc: cauHinh.thuMucSaoLuuTam || path.join(cauHinh.duongDanDb === ':memory:' ? os.tmpdir() : path.dirname(cauHinh.duongDanDb), 'sao-luu-tam'),
+        lyDo,
+      }),
   };
 
   // Duong dan cong khai duy nhat ngoai dang nhap: kiem tra suc khoe (khong lo thong tin nhay cam).
@@ -64,11 +72,17 @@ function taoUngDung(tuyChon) {
   }
 
   app.use((loi, req, res, next) => {
-    console.error('[LOI] ' + req.method + ' ' + req.originalUrl + ': ' + loi.message);
     if (res.headersSent) {
       next(loi);
       return;
     }
+    // Loi do nguoi dung gui (file qua lon 413, JSON hong 400...) tra dung ma, khong bao la loi may chu.
+    const ma = loi.status || loi.statusCode;
+    if (Number.isInteger(ma) && ma >= 400 && ma < 500) {
+      res.status(ma).json({ loi: ma === 413 ? 'Dữ liệu gửi lên quá lớn' : 'Yêu cầu không hợp lệ' });
+      return;
+    }
+    console.error('[LOI] ' + req.method + ' ' + req.originalUrl + ': ' + loi.message);
     res.status(500).json({ loi: 'Lỗi máy chủ' });
   });
 

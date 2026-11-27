@@ -67,3 +67,10 @@ input[type="checkbox"] { padding: 0; }
 tr.mo td { color: #8a909e; }
 
 .goi-y-hang { grid-column: 1 / -1; margin: 0; }
+
+/* ---- Buoc 6: nhap Excel ---- */
+.cac-buoc { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0 12px; }
+.buoc { background: #e6e9f0; color: #5c6475; padding: 6px 14px; border-radius: 14px; font-size: 14px; }
+.buoc-chon { background: #1f3864; color: #fff; font-weight: bold; }
+.chon-che-do { border: 1px solid #d5d9e2; border-radius: 6px; padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; }
+.hop-nguy-hiem { border: 2px solid #b71c1c; }

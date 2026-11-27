@@ -9,6 +9,7 @@ const { z } = require('zod');
 const { TRUONG, QUAN_HE_THEO_NHOM } = require('../../../shared/truong-muc.js');
 const { bieuMauSangCot, taoTimKiem, truongCuaBang } = require('../../../shared/bieu-mau.js');
 const { ngayDuongLich } = require('../../../shared/ngay-chuoi.js');
+const { kiemTraTrungThanNhan } = require('../../../shared/than-nhan.js');
 const { phanTich, guiLoiDuLieu, boc, LoiNghiepVu } = require('../tai-khoan/tien-ich');
 const { chenDong, capNhatQuanNhanTheoPhienBan } = require('./ghi-sql');
 const { BANG_CON } = require('./ho-so');
@@ -87,6 +88,12 @@ function dangKyGhi(router, boiCanh) {
     for (const bang of BANG_CON) {
       if (du[bang] !== undefined) {
         con[bang] = du[bang].map((bieuMau, i) => chuyenDong(bang, bieuMau, i, danhSachLoi));
+      }
+    }
+    // Khong ghi trung than nhan: moi (cha, me) chi mot nguoi cho moi loai quan he, mot vo/chong hien tai, khong nhap trung dong.
+    if (con.than_nhan) {
+      for (const l of kiemTraTrungThanNhan(con.than_nhan, (i) => '"' + (con.than_nhan[i].ho_ten || 'dòng ' + (i + 1)) + '"')) {
+        danhSachLoi.push({ bang: 'than_nhan', dong: l.chiSo, truong: l.truong, thongBao: l.thongBao });
       }
     }
     if (danhSachLoi.length > 0) {
