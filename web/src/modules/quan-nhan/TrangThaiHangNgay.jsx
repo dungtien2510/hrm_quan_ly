@@ -1,9 +1,16 @@
-import { useCallback, useEffect, useState } from 'react';
-import { goiApi } from '../../api.js';
-import { dungXacThuc } from '../../xac-thuc.jsx';
-import { ngayDuSangHienThi } from '../../../../shared/bieu-mau.js';
+import { useCallback, useEffect, useState } from "react";
+import { goiApi } from "../../api.js";
+import { dungXacThuc } from "../../xac-thuc.jsx";
+import { HopThoaiXacNhan } from "../../thanh-phan.jsx";
+import { ngayDuSangHienThi } from "../../../../shared/bieu-mau.js";
+import { TheTrangThai } from "./hien-thi.jsx";
 
-const FORM_TRONG = { trang_thai_id: '', tu_ngay: '', den_ngay: '', ly_do_hoac_noi: '' };
+const FORM_TRONG = {
+  trang_thai_id: "",
+  tu_ngay: "",
+  den_ngay: "",
+  ly_do_hoac_noi: "",
+};
 
 // Trang thai hang ngay cua mot quan nhan theo khoang thoi gian. Admin them / sua / xoa; may chu khong cho chong nhau.
 export default function TrangThaiHangNgay({ quanNhanId, laAdmin, khiThayDoi }) {
@@ -12,11 +19,13 @@ export default function TrangThaiHangNgay({ quanNhanId, laAdmin, khiThayDoi }) {
   const [loai, setLoai] = useState([]);
   const [form, setForm] = useState(FORM_TRONG);
   const [dangSua, setDangSua] = useState(null);
-  const [loi, setLoi] = useState('');
+  const [loi, setLoi] = useState("");
+  const [hoiXoa, setHoiXoa] = useState(null); // dong dang hoi xoa (null = khong hoi)
+  const [dangXoa, setDangXoa] = useState(false);
 
   const tai = useCallback(async () => {
     try {
-      setDu(await goiApi('/api/trang-thai/quan-nhan/' + quanNhanId));
+      setDu(await goiApi("/api/trang-thai/quan-nhan/" + quanNhanId));
     } catch (e) {
       setLoi(e.message);
       xuLyLoiApi(e);
@@ -25,25 +34,29 @@ export default function TrangThaiHangNgay({ quanNhanId, laAdmin, khiThayDoi }) {
 
   useEffect(() => {
     tai();
-    goiApi('/api/danh-muc?loai=trang_thai')
+    goiApi("/api/danh-muc?loai=trang_thai")
       .then((kq) => setLoai(kq.dong))
       .catch(() => setLoai([]));
   }, [tai]);
 
   async function gui(suKien) {
     suKien.preventDefault();
-    setLoi('');
+    setLoi("");
     const body = {
       trang_thai_id: Number(form.trang_thai_id),
       tu_ngay: form.tu_ngay,
-      den_ngay: form.den_ngay.trim() === '' ? null : form.den_ngay,
-      ly_do_hoac_noi: form.ly_do_hoac_noi.trim() === '' ? null : form.ly_do_hoac_noi,
+      den_ngay: form.den_ngay.trim() === "" ? null : form.den_ngay,
+      ly_do_hoac_noi:
+        form.ly_do_hoac_noi.trim() === "" ? null : form.ly_do_hoac_noi,
     };
     try {
       if (dangSua) {
-        await goiApi('/api/trang-thai/' + dangSua, { phuongThuc: 'PUT', body });
+        await goiApi("/api/trang-thai/" + dangSua, { phuongThuc: "PUT", body });
       } else {
-        await goiApi('/api/trang-thai/quan-nhan/' + quanNhanId, { phuongThuc: 'POST', body });
+        await goiApi("/api/trang-thai/quan-nhan/" + quanNhanId, {
+          phuongThuc: "POST",
+          body,
+        });
       }
       setForm(FORM_TRONG);
       setDangSua(null);
@@ -57,20 +70,27 @@ export default function TrangThaiHangNgay({ quanNhanId, laAdmin, khiThayDoi }) {
     }
   }
 
-  async function xoa(dong) {
-    if (!window.confirm('Xóa khoảng trạng thái "' + dong.ten_trang_thai + '"?')) {
-      return;
-    }
-    setLoi('');
+  async function xoa() {
+    const dong = hoiXoa;
+    setDangXoa(true);
+    setLoi("");
     try {
-      await goiApi('/api/trang-thai/' + dong.id, { phuongThuc: 'DELETE' });
+      await goiApi("/api/trang-thai/" + dong.id, { phuongThuc: "DELETE" });
+      setHoiXoa(null);
+      if (dangSua === dong.id) {
+        setDangSua(null);
+        setForm(FORM_TRONG);
+      }
       await tai();
       if (khiThayDoi) {
         khiThayDoi();
       }
     } catch (e) {
+      setHoiXoa(null);
       setLoi(e.message);
       xuLyLoiApi(e);
+    } finally {
+      setDangXoa(false);
     }
   }
 
@@ -80,23 +100,31 @@ export default function TrangThaiHangNgay({ quanNhanId, laAdmin, khiThayDoi }) {
       trang_thai_id: String(dong.trang_thai_id),
       tu_ngay: ngayDuSangHienThi(dong.tu_ngay),
       den_ngay: ngayDuSangHienThi(dong.den_ngay),
-      ly_do_hoac_noi: dong.ly_do_hoac_noi || '',
+      ly_do_hoac_noi: dong.ly_do_hoac_noi || "",
     });
-    setLoi('');
+    setLoi("");
   }
 
-  const chonLoai = loai.find((l) => String(l.id) === String(form.trang_thai_id));
+  const chonLoai = loai.find(
+    (l) => String(l.id) === String(form.trang_thai_id),
+  );
   if (!du) {
-    return loi ? <div className="loi">{loi}</div> : <p className="phu">Đang tải trạng thái...</p>;
+    return loi ? (
+      <div className="loi">{loi}</div>
+    ) : (
+      <p className="phu">Đang tải trạng thái...</p>
+    );
   }
+  const dongXoa = hoiXoa || {};
   return (
     <div>
       <p>
-        Hôm nay:{' '}
-        <span className="the-trang-thai" style={{ background: du.homNay.mau || '#757575' }}>
-          {du.homNay.ten}
-        </span>{' '}
-        {du.homNay.macDinh && <span className="phu">(không có khoảng nào bao trùm hôm nay nên mặc định là Có mặt)</span>}
+        Hôm nay: <TheTrangThai trangThai={du.homNay} />{" "}
+        {du.homNay.macDinh && (
+          <span className="phu">
+            (không có khoảng nào bao trùm hôm nay nên mặc định là Có mặt)
+          </span>
+        )}
       </p>
       {loi && <div className="loi">{loi}</div>}
       <div className="cuon-ngang">
@@ -121,19 +149,31 @@ export default function TrangThaiHangNgay({ quanNhanId, laAdmin, khiThayDoi }) {
             {du.dong.map((d) => (
               <tr key={d.id}>
                 <td>
-                  <span className="the-trang-thai" style={{ background: d.mau || '#757575' }}>
-                    {d.ten_trang_thai}
-                  </span>
+                  <TheTrangThai
+                    trangThai={{ mau: d.mau, ten: d.ten_trang_thai }}
+                  />
                 </td>
                 <td>{ngayDuSangHienThi(d.tu_ngay)}</td>
-                <td>{d.den_ngay ? ngayDuSangHienThi(d.den_ngay) : <span className="phu">chưa kết thúc</span>}</td>
+                <td>
+                  {d.den_ngay ? (
+                    ngayDuSangHienThi(d.den_ngay)
+                  ) : (
+                    <span className="phu">chưa kết thúc</span>
+                  )}
+                </td>
                 <td>{d.ly_do_hoac_noi}</td>
                 {laAdmin && (
                   <td className="thao-tac">
-                    <button className="nut nut-phu" onClick={() => batDauSua(d)}>
+                    <button
+                      className="nut nut-phu"
+                      onClick={() => batDauSua(d)}
+                    >
                       Sửa
                     </button>
-                    <button className="nut nut-phu" onClick={() => xoa(d)}>
+                    <button
+                      className="nut nut-chu-nguy-hiem"
+                      onClick={() => setHoiXoa(d)}
+                    >
                       Xóa
                     </button>
                   </td>
@@ -145,10 +185,17 @@ export default function TrangThaiHangNgay({ quanNhanId, laAdmin, khiThayDoi }) {
       </div>
       {laAdmin && (
         <form className="hang-form" onSubmit={gui}>
-          <strong>{dangSua ? 'Sửa khoảng trạng thái' : 'Thêm khoảng trạng thái'}</strong>
+          <strong>
+            {dangSua ? "Sửa khoảng trạng thái" : "Thêm khoảng trạng thái"}
+          </strong>
           <label>
             Trạng thái
-            <select value={form.trang_thai_id} onChange={(e) => setForm({ ...form, trang_thai_id: e.target.value })}>
+            <select
+              value={form.trang_thai_id}
+              onChange={(e) =>
+                setForm({ ...form, trang_thai_id: e.target.value })
+              }
+            >
               <option value="">— chọn —</option>
               {loai.map((l) => (
                 <option key={l.id} value={l.id}>
@@ -160,25 +207,42 @@ export default function TrangThaiHangNgay({ quanNhanId, laAdmin, khiThayDoi }) {
           {chonLoai && (
             <p className="phu goi-y-hang">
               {chonLoai.cho_dang_ky_truoc === 1
-                ? 'Loại này đăng ký trước được: có thể chọn ngày ở tương lai.'
+                ? "Loại này đăng ký trước được: có thể chọn ngày ở tương lai."
                 : 'Loại này chỉ ghi việc đã hoặc đang xảy ra: không chọn ngày ở tương lai. Nếu vẫn đang ở trạng thái này thì để trống "Đến ngày".'}
             </p>
           )}
           <label>
             Từ ngày
-            <input placeholder="dd/mm/yyyy" value={form.tu_ngay} onChange={(e) => setForm({ ...form, tu_ngay: e.target.value })} />
+            <input
+              placeholder="dd/mm/yyyy"
+              value={form.tu_ngay}
+              onChange={(e) => setForm({ ...form, tu_ngay: e.target.value })}
+            />
           </label>
           <label>
             Đến ngày (bỏ trống nếu chưa kết thúc)
-            <input placeholder="dd/mm/yyyy" value={form.den_ngay} onChange={(e) => setForm({ ...form, den_ngay: e.target.value })} />
+            <input
+              placeholder="dd/mm/yyyy"
+              value={form.den_ngay}
+              onChange={(e) => setForm({ ...form, den_ngay: e.target.value })}
+            />
           </label>
           <label>
             Lý do hoặc nơi
-            <input value={form.ly_do_hoac_noi} onChange={(e) => setForm({ ...form, ly_do_hoac_noi: e.target.value })} />
+            <input
+              value={form.ly_do_hoac_noi}
+              onChange={(e) =>
+                setForm({ ...form, ly_do_hoac_noi: e.target.value })
+              }
+            />
           </label>
           <div className="hang">
-            <button className="nut" type="submit" disabled={!form.trang_thai_id || !form.tu_ngay}>
-              {dangSua ? 'Lưu thay đổi' : 'Thêm'}
+            <button
+              className="nut"
+              type="submit"
+              disabled={!form.trang_thai_id || !form.tu_ngay}
+            >
+              {dangSua ? "Lưu thay đổi" : "Thêm"}
             </button>
             {dangSua && (
               <button
@@ -187,7 +251,7 @@ export default function TrangThaiHangNgay({ quanNhanId, laAdmin, khiThayDoi }) {
                 onClick={() => {
                   setDangSua(null);
                   setForm(FORM_TRONG);
-                  setLoi('');
+                  setLoi("");
                 }}
               >
                 Hủy sửa
@@ -196,6 +260,29 @@ export default function TrangThaiHangNgay({ quanNhanId, laAdmin, khiThayDoi }) {
           </div>
         </form>
       )}
+
+      <HopThoaiXacNhan
+        mo={hoiXoa !== null}
+        tieuDe="Xóa khoảng trạng thái?"
+        nhanXacNhan="Xóa"
+        nguyHiem
+        dangXuLy={dangXoa}
+        khiXacNhan={xoa}
+        khiHuy={() => setHoiXoa(null)}
+      >
+        <p>
+          Trạng thái <strong>{dongXoa.ten_trang_thai}</strong>, từ{" "}
+          {ngayDuSangHienThi(dongXoa.tu_ngay)}{" "}
+          {dongXoa.den_ngay
+            ? "đến " + ngayDuSangHienThi(dongXoa.den_ngay)
+            : "(chưa kết thúc)"}
+          .
+        </p>
+        <p className="phu">
+          Sau khi xóa, những ngày này sẽ trở về "Có mặt" nếu không có khoảng nào
+          khác bao trùm.
+        </p>
+      </HopThoaiXacNhan>
     </div>
   );
 }

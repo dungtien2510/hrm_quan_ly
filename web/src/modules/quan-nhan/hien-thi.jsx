@@ -62,10 +62,21 @@ export function tuoiHienThi(dong) {
     : dong.tuoi + " tuổi";
 }
 
+// export function KhongCoQuyen({ muc }) {
+//   return (
+//     <p className="khong-quyen">
+//       Bạn không có quyền xem mục "{NHAN_MUC[muc] || muc}".
+//     </p>
+//   );
+// }
 export function KhongCoQuyen({ muc }) {
   return (
-    <p className="khong-quyen">
-      Bạn không có quyền xem mục "{NHAN_MUC[muc] || muc}".
+    <p className="khong-quyen" role="note">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="5" y="11" width="14" height="10" rx="2" />
+        <path d="M8 11V8a4 4 0 018 0v3" />
+      </svg>
+      <span>Bạn không có quyền xem mục "{NHAN_MUC[muc] || muc}".</span>
     </p>
   );
 }

@@ -866,3 +866,94 @@ tr.mo td {
   margin-left: 8px;
   vertical-align: middle;
 }
+/* ---------- Luot 3b: khoi "khong co quyen" ro rang hon ---------- */
+.khong-quyen {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0;
+  padding: 10px 12px;
+  background: var(--color-neutral-soft);
+  color: var(--color-text);
+  border: 1px dashed var(--color-muted);
+  border-radius: var(--radius-sm);
+}
+.khong-quyen svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  stroke: var(--color-muted);
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+/* ---------- Luot 4: dang nhap, o mat khau, nut xoa dang chu ---------- */
+.hop-dau {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.hop-dau h1 {
+  margin: 0;
+  font-size: 20px;
+}
+.hop-dau .thuong-hieu-dau {
+  width: 40px;
+  height: 40px;
+}
+.hop-dau .thuong-hieu-dau svg {
+  width: 22px;
+  height: 22px;
+}
+:root[data-theme="red"] .hop-dau h1::after {
+  content: none;
+}
+:root[data-theme="red"] .hop-dau {
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--color-accent);
+}
+
+.truong-mk {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.o-mat-khau {
+  position: relative;
+  display: flex;
+}
+.o-mat-khau
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not(
+    [type="color"]
+  ) {
+  width: 100%;
+  padding-right: 68px;
+}
+.nut-hien-mk {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  height: 28px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-primary);
+  font: 500 13px var(--font);
+  cursor: pointer;
+}
+.nut-hien-mk:hover {
+  background: var(--color-primary-soft);
+}
+
+.nut-chu-nguy-hiem {
+  background: transparent;
+  border-color: transparent;
+  color: var(--color-danger);
+}
+.nut-chu-nguy-hiem:hover {
+  background: var(--color-danger-soft);
+  border-color: transparent;
+}
